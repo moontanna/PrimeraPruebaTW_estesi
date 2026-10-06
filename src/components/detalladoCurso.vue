@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { getCursoById } from '../bases/impfunciones'
+import { estaInscritoEnCurso, getCursoById } from '../bases/impfunciones'
 
 const route = useRoute()
 
@@ -17,12 +17,16 @@ const secciones = [
 const curso = computed(() => {
   return getCursoById(Number(route.params.id))
 })
+
+const estaInscrito = computed(() =>
+  curso.value ? estaInscritoEnCurso(curso.value.id) : false,
+)
 </script>
 
 <template>
   <main v-if="curso" class="detalle-curso page-shell">
-    <div class="detalle-layout">
-      <aside class="indice">
+    <div class="detalle-layout" :class="{ 'sin-indice': !estaInscrito }">
+      <aside v-if="estaInscrito" class="indice">
         <p class="indice-titulo">Contenido</p>
         <nav class="indice-nav">
           <RouterLink
@@ -46,9 +50,10 @@ const curso = computed(() => {
         <header class="detalle-encabezado">
           <h1 class="page-title">{{ curso.nombre }}</h1>
           <p class="page-intro">
-            Consulta las certificaciones, recursos y videos relacionados con este curso.
+            Consulta la información y los recursos relacionados con este curso.
           </p>
           <RouterLink
+            v-if="!estaInscrito"
             :to="{ name: 'inscripciones', query: { curso: curso.id } }"
             class="boton-inscripcion"
           >
@@ -56,76 +61,87 @@ const curso = computed(() => {
           </RouterLink>
         </header>
 
-        <section id="certificaciones">
-          <h2>Certificaciones</h2>
-          <ul>
-            <li v-for="certificacion in curso.certificaciones" :key="certificacion">
-              {{ certificacion }}
-            </li>
-          </ul>
+        <section v-if="!estaInscrito" class="aviso-inscripcion">
+          <h2>Inscríbete para ver el contenido</h2>
+          <p>Regístrate en este curso para acceder a sus certificaciones, materiales, videos y demás información.</p>
+          <RouterLink
+            :to="{ name: 'inscripciones', query: { curso: curso.id } }"
+            class="boton-inscripcion"
+          >
+            Inscribirme y ver el contenido
+          </RouterLink>
         </section>
 
-        <section id="empresas-afiliadas">
-          <h2>Empresas afiliadas</h2>
-          <ul>
-            <li v-for="empresa in curso.empresasReferencia" :key="empresa.url">
-              <a :href="empresa.url" target="_blank" rel="noopener noreferrer">
-                {{ empresa.titulo }}
-              </a>
-            </li>
-          </ul>
-        </section>
+        <template v-else>
+          <section id="certificaciones">
+            <h2>Certificaciones</h2>
+            <ul>
+              <li v-for="certificacion in curso.certificaciones" :key="certificacion">
+                {{ certificacion }}
+              </li>
+            </ul>
+          </section>
 
-        <section id="caso-exito">
-          <h2>Historia de éxito</h2>
-          <h3>{{ curso.casoDeExito.persona }}</h3>
-          <p>{{ curso.casoDeExito.descripcion }}</p>
-        </section>
+          <section id="empresas-afiliadas">
+            <h2>Empresas afiliadas</h2>
+            <ul>
+              <li v-for="empresa in curso.empresasReferencia" :key="empresa.url">
+                <a :href="empresa.url" target="_blank" rel="noopener noreferrer">
+                  {{ empresa.titulo }}
+                </a>
+              </li>
+            </ul>
+          </section>
 
-        <section id="material-apoyo">
-          <h2>Material de apoyo</h2>
-          <figure class="imagen-apoyo">
-            <img :src="curso.imagenApoyo.url" :alt="curso.imagenApoyo.alt" loading="lazy" />
-          </figure>
-          <ul>
-            <li v-for="material in curso.materialApoyo" :key="material.url">
-              <a :href="material.url" target="_blank" rel="noopener noreferrer">
-                {{ material.titulo }}
-              </a>
-            </li>
-          </ul>
-        </section>
+          <section id="caso-exito">
+            <h2>Historia de éxito</h2>
+            <h3>{{ curso.casoDeExito.persona }}</h3>
+            <p>{{ curso.casoDeExito.descripcion }}</p>
+          </section>
 
-        <section v-if="curso.videos.length" id="videos">
-          <h2>Videos</h2>
-          <div class="videos-grid">
-            <article v-for="video in curso.videos" :key="video.url" class="video-card">
-              <div v-if="video.url.includes('/embed/')" class="video-wrapper">
-                <iframe
-                  :src="video.url"
-                  :title="video.titulo"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                ></iframe>
-              </div>
-              <a v-else :href="video.url" target="_blank" rel="noopener noreferrer" class="video-link">
-                {{ video.titulo }}
-              </a>
-            </article>
-          </div>
-        </section>
+          <section id="material-apoyo">
+            <h2>Material de apoyo</h2>
+            <figure class="imagen-apoyo">
+              <img :src="curso.imagenApoyo.url" :alt="curso.imagenApoyo.alt" loading="lazy" />
+            </figure>
+            <ul>
+              <li v-for="material in curso.materialApoyo" :key="material.url">
+                <a :href="material.url" target="_blank" rel="noopener noreferrer">
+                  {{ material.titulo }}
+                </a>
+              </li>
+            </ul>
+          </section>
 
-        <section id="contacto">
-          <h2>Contacto</h2>
-          <p>
-            Correo:
-            <a :href="`mailto:${curso.contacto.correo}`">
+          <section v-if="curso.videos.length" id="videos">
+            <h2>Videos</h2>
+            <div class="videos-grid">
+              <article v-for="video in curso.videos" :key="video.url" class="video-card">
+                <div v-if="video.url.includes('/embed/')" class="video-wrapper">
+                  <iframe
+                    :src="video.url"
+                    :title="video.titulo"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+                <a v-else :href="video.url" target="_blank" rel="noopener noreferrer" class="video-link">
+                  {{ video.titulo }}
+                </a>
+              </article>
+            </div>
+          </section>
+
+          <section id="contacto">
+            <h2>Contacto</h2>
+            <p>
+              Correo:
               {{ curso.contacto.correo }}
-            </a>
-          </p>
-          <p>Teléfono: {{ curso.contacto.telefono }}</p>
-          <p v-if="curso.contacto.horario">Horario: {{ curso.contacto.horario }}</p>
-        </section>
+            </p>
+            <p>Teléfono: {{ curso.contacto.telefono }}</p>
+            <p v-if="curso.contacto.horario">Horario: {{ curso.contacto.horario }}</p>
+          </section>
+        </template>
 
       </div>
     </div>
@@ -152,6 +168,10 @@ const curso = computed(() => {
   grid-template-columns: 220px minmax(0, 1fr);
   gap: 32px;
   align-items: start;
+}
+
+.detalle-layout.sin-indice {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .indice {
@@ -207,6 +227,15 @@ const curso = computed(() => {
 
 .detalle-encabezado .page-intro {
   margin-bottom: 18px;
+}
+
+.aviso-inscripcion {
+  display: grid;
+  gap: 12px;
+}
+
+.aviso-inscripcion p {
+  margin: 0;
 }
 
 .volver {

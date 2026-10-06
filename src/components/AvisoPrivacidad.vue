@@ -72,9 +72,7 @@
       </p>
       <p>
         <strong>Correo:</strong>
-        <a href="mailto:privacidad@facultad.edu.mx">
-          privacidad@facultad.edu.mx
-        </a>
+        privacidad@facultad.edu.mx
       </p>
     </section>
 

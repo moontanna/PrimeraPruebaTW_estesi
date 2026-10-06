@@ -1,4 +1,4 @@
-import { cursos, type Curso } from '../data/cursos'
+import { cursos, inscripciones, type Curso } from '../data/cursos'
 
 export type FiltroCurso = 'todos' | 'destacados'
 
@@ -6,6 +6,9 @@ export const idsDestacados = [1, 4, 5, 8, 9]
 
 export const getCursoById = (id: number): Curso | undefined =>
   cursos.find((curso) => curso.id === id)
+
+export const estaInscritoEnCurso = (cursoId: number): boolean =>
+  inscripciones.some((inscripcion) => inscripcion.cursoId === cursoId)
 
 export const getCursosByFiltro = (filtro: FiltroCurso): Curso[] =>
   filtro === 'destacados'

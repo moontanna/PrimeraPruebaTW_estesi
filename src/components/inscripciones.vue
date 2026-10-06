@@ -110,6 +110,9 @@ function registrarOtraInscripcion() {
             {{ inscripcionGuardada.nombre }}, registramos tu solicitud para
             <strong>{{ inscripcionGuardada.cursoNombre }}</strong>.
           </p>
+          <RouterLink :to="`/cursos/${inscripcionGuardada.cursoId}`" class="enlace-contenido">
+            Ver contenido del curso
+          </RouterLink>
         </div>
         <button type="button" class="boton-secundario" @click="registrarOtraInscripcion">
           Registrar otra
@@ -229,6 +232,13 @@ function registrarOtraInscripcion() {
 .confirmacion h2,
 .confirmacion p {
   margin: 0 0 6px;
+}
+
+.enlace-contenido {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--brand-purple);
+  font-weight: 700;
 }
 
 .nota-persistencia {

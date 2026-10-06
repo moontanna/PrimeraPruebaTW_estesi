@@ -30,13 +30,13 @@
           </svg>
           UADY
         </a>
-        <a href="mailto:atencion.uadyvirtual@correo.uady.mx">
+        <span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="5" width="18" height="14" rx="2" />
             <path d="m4 7 8 6 8-6" />
           </svg>
           atencion.uadyvirtual@correo.uady.mx
-        </a>
+        </span>
 
       </div>
 
@@ -149,7 +149,8 @@
   gap: 18px;
 }
 
-.contactos a {
+.contactos a,
+.contactos span {
   display: inline-flex;
   align-items: center;
   gap: 7px;

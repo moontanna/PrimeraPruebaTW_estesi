@@ -110,10 +110,6 @@ function registrarOtraInscripcion() {
             {{ inscripcionGuardada.nombre }}, registramos tu solicitud para
             <strong>{{ inscripcionGuardada.cursoNombre }}</strong>.
           </p>
-          <p class="nota-persistencia">
-            El registro está en la lista de esta sesión y no se conserva si recargas o cierras la
-            página.
-          </p>
         </div>
         <button type="button" class="boton-secundario" @click="registrarOtraInscripcion">
           Registrar otra
